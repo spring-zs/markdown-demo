@@ -42,7 +42,9 @@ public class ArticleServiceImpl implements ArticleService {
             file.transferTo(dest);// 文件写入
 
             //返回虚拟路径
-            return ("image"+relativePath+newFileName);
+            String url =("image"+relativePath+newFileName).replaceAll("\\\\","\\/");
+
+            return url;
 
 
         } catch (Exception e) {
