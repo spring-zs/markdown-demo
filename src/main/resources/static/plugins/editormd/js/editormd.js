@@ -577,11 +577,11 @@
                         
                         _this.setToolbar();
 
-                        editormd.loadScript(loadPath + "marked.min", function() {
+                        editormd.loadScript(loadPath + "marked", function() {
 
                             editormd.$marked = marked;
                                 
-                            if (settings.previewCodeHighlight) 
+                            if (settings.previewCodeHighlight)
                             {
                                 editormd.loadScript(loadPath + "prettify.min", function() {
                                     loadFlowChartOrSequenceDiagram();
@@ -1638,7 +1638,7 @@
                                 break;
                                 
                             case 122:
-                                    $.proxy(toolbarHandlers["fullscreen"], _this)();                        
+                                    $.proxy(toolbarHandlers["fullscreen"], _this)();
                                     return false;
                                 break;
                                 
@@ -2037,49 +2037,49 @@
                 previewContainer.html(newMarkdownDoc);
 
                 this.previewCodeHighlight();
-                
-                if (settings.toc) 
+
+                if (settings.toc)
                 {
                     var tocContainer = (settings.tocContainer === "") ? previewContainer : $(settings.tocContainer);
                     var tocMenu      = tocContainer.find("." + this.classPrefix + "toc-menu");
-                    
+
                     tocContainer.attr("previewContainer", (settings.tocContainer === "") ? "true" : "false");
-                    
+
                     if (settings.tocContainer !== "" && tocMenu.length > 0)
                     {
                         tocMenu.remove();
                     }
-                    
+
                     editormd.markdownToCRenderer(markdownToC, tocContainer, settings.tocDropdown, settings.tocStartLevel);
-            
+
                     if (settings.tocDropdown || tocContainer.find("." + this.classPrefix + "toc-menu").length > 0)
                     {
                         editormd.tocDropdownMenu(tocContainer, (settings.tocTitle !== "") ? settings.tocTitle : this.lang.tocTitle);
                     }
-            
+
                     if (settings.tocContainer !== "")
                     {
                         previewContainer.find(".markdown-toc").css("border", "none");
                     }
                 }
-                
+
                 if (settings.tex)
                 {
-                    if (!editormd.kaTeXLoaded && settings.autoLoadModules) 
+                    if (!editormd.kaTeXLoaded && settings.autoLoadModules)
                     {
                         editormd.loadKaTeX(function() {
                             editormd.$katex = katex;
                             editormd.kaTeXLoaded = true;
                             _this.katexRender();
                         });
-                    } 
-                    else 
+                    }
+                    else
                     {
                         editormd.$katex = katex;
                         this.katexRender();
                     }
-                }                
-                
+                }
+
                 if (settings.flowChart || settings.sequenceDiagram)
                 {
                     flowchartTimer = setTimeout(function(){
@@ -2089,7 +2089,7 @@
                     }, 10);
                 }
 
-                if (state.loaded) 
+                if (state.loaded)
                 {
                     $.proxy(settings.onchange, this)();
                 }
@@ -2332,7 +2332,7 @@
          * 获取预览窗口的HTML源码
          * Get html from preview container
          * 
-         * @returns {editormd}         返回editormd的实例对象
+         * @returns {String}
          */
         
         getPreviewedHTML : function() {
@@ -2342,8 +2342,10 @@
 
                 return false;
             }
-            
+
             return this.previewContainer.html();
+           //fixbug: 此处获得和getHTML是一样的。。。。如果把节点和子节点都包含，则需要outerHTML
+           //  return this.previewContainer.prop("outerHTML");
         },
         
         /**
@@ -3956,8 +3958,8 @@
             smartLists  : true,
             smartypants : true
         };
-        
-		markdownDoc = new String(markdownDoc);
+        //新版本的marked需要是string（旧版本使用的是String）
+		// markdownDoc = new String(markdownDoc);
         
         var markdownParsed = marked(markdownDoc, markedOptions);
         
@@ -4038,6 +4040,182 @@
             return saveTo.val();
         };
         
+        return div;
+    };
+
+    /**
+     * 将通过getHTML方法获取的html在前台正确显示，由于getHTML中并没有toc tocm语法所产生的目录等，所以
+     * 本方法直接去掉了toc tocm相应的节点 div.find(".editormd-toc-menu, .editormd-markdown-toc").remove();
+     * 这句实现的
+     * 要想实现TOC，则必须解析html的xml数据，然后找到所有的标题信息数组，
+     * 调用editormd.markdownToCRenderer即可（markdown信息就是解析出所有标题数据，然后调用的这个方法）。
+     *
+     * @param   {String}   id            用于显示HTML的对象ID
+     * @param {String} html  通过getHTML方法得到的html字符串
+     * @param   {Object}   [options={}]  配置选项，可选
+     * @returns {Object}   div           返回jQuery对象元素
+     */
+
+    editormd.HTMLToPreview = function(id, html, options) {
+        var defaults = {
+            gfm                  : true,
+            toc                  : true,
+            tocm                 : false,
+            tocStartLevel        : 1,
+            tocTitle             : "目录",
+            tocDropdown          : false,
+            tocContainer         : "",
+            markdown             : "",
+            markdownSourceCode   : false,
+            htmlDecode           : false,
+            autoLoadKaTeX        : true,
+            pageBreak            : true,
+            atLink               : true,    // for @link
+            emailLink            : true,    // for mail address auto link
+            tex                  : false,
+            taskList             : false,   // Github Flavored Markdown task lists
+            emoji                : false,
+            flowChart            : false,
+            sequenceDiagram      : false,
+            previewCodeHighlight : true,
+            selector:"h1,h2,h3,h4,h5,h6" //生成目录 时的选择器
+        };
+
+        editormd.$marked  = marked;
+
+        var div           = $("#" + id);
+        var settings      = div.settings = $.extend(true, defaults, options || {});
+        // var saveTo        = div.find("textarea");
+        //
+        // if (saveTo.length < 1)
+        // {
+        //     div.append("<textarea></textarea>");
+        //     saveTo        = div.find("textarea");
+        // }
+
+        // var markdownDoc   = (settings.markdown === "") ? saveTo.val() : settings.markdown;
+        var markdownToC   = [];
+
+        // var rendererOptions = {
+        //     toc                  : settings.toc,
+        //     tocm                 : settings.tocm,
+        //     tocStartLevel        : settings.tocStartLevel,
+        //     taskList             : settings.taskList,
+        //     emoji                : settings.emoji,
+        //     tex                  : settings.tex,
+        //     pageBreak            : settings.pageBreak,
+        //     atLink               : settings.atLink,           // for @link
+        //     emailLink            : settings.emailLink,        // for mail address auto link
+        //     flowChart            : settings.flowChart,
+        //     sequenceDiagram      : settings.sequenceDiagram,
+        //     previewCodeHighlight : settings.previewCodeHighlight,
+        // };
+
+        // var markedOptions = {
+        //     renderer    : editormd.markedRenderer(markdownToC, rendererOptions),
+        //     gfm         : settings.gfm,
+        //     tables      : true,
+        //     breaks      : true,
+        //     pedantic    : false,
+        //     sanitize    : (settings.htmlDecode) ? false : true, // 是否忽略HTML标签，即是否开启HTML标签解析，为了安全性，默认不开启
+        //     smartLists  : true,
+        //     smartypants : true
+        // };
+        //新版本的marked需要是string（旧版本使用的是String）
+        // markdownDoc = new String(markdownDoc);
+
+        // var markdownParsed = marked(markdownDoc, markedOptions);
+
+        var markdownParsed = html;
+
+        // if (settings.markdownSourceCode) {
+        //     saveTo.text(markdownDoc);
+        // } else {
+        //     saveTo.remove();
+        // }
+
+        div.addClass("markdown-body " + this.classPrefix + "html-preview").append(markdownParsed);
+
+        var tocContainer = (settings.tocContainer !== "") ? $(settings.tocContainer) : div;
+
+        if (settings.tocContainer !== "")
+        {
+            tocContainer.attr("previewContainer", false);
+        }
+
+        if (settings.toc)
+        {
+           var nodes = document.querySelectorAll(settings.selector);
+
+            var headings = [];
+
+            Array.prototype.forEach.call(nodes, function (node) {
+
+                headings.push({
+                    text: node.innerText,
+                    level: parseInt(node.tagName.replace(/[h]/i, ''), 10),
+                    slug:""//没有使用
+                });
+            });
+
+            div.tocContainer = this.markdownToCRenderer(headings, tocContainer, settings.tocDropdown, settings.tocStartLevel);
+
+            if (settings.tocDropdown || div.find("." + this.classPrefix + "toc-menu").length > 0)
+            {
+                this.tocDropdownMenu(div, settings.tocTitle);
+            }
+
+            if (settings.tocContainer !== "")
+            {
+                div.find(".editormd-toc-menu, .editormd-markdown-toc").remove();
+            }
+        }
+
+        if (settings.previewCodeHighlight)
+        {
+            div.find("pre").addClass("prettyprint linenums");
+            prettyPrint();
+        }
+
+        if (!editormd.isIE8)
+        {
+            if (settings.flowChart) {
+                div.find(".flowchart").flowChart();
+            }
+
+            if (settings.sequenceDiagram) {
+                div.find(".sequence-diagram").sequenceDiagram({theme: "simple"});
+            }
+        }
+
+        if (settings.tex)
+        {
+            var katexHandle = function() {
+                div.find("." + editormd.classNames.tex).each(function(){
+                    var tex  = $(this);
+                    katex.render(tex.html().replace(/&lt;/g, "<").replace(/&gt;/g, ">"), tex[0]);
+                    tex.find(".katex").css("font-size", "1.6em");
+                });
+            };
+
+            if (settings.autoLoadKaTeX && !editormd.$katex && !editormd.kaTeXLoaded)
+            {
+                this.loadKaTeX(function() {
+                    editormd.$katex      = katex;
+                    editormd.kaTeXLoaded = true;
+                    katexHandle();
+                });
+            }
+            else
+            {
+                katexHandle();
+            }
+        }
+
+        div.getMarkdown = function() {
+            return saveTo.val();
+        };
+
         return div;
     };
     

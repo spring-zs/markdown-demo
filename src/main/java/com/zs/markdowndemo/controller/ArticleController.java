@@ -3,8 +3,6 @@ package com.zs.markdowndemo.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.zs.markdowndemo.service.ArticleService;
-import org.apache.commons.lang3.StringUtils;
-import org.jboss.logging.BasicLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -23,10 +20,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @Controller
-@RequestMapping("/file")
-public class FileUploadController {
+@RequestMapping("/article")
+public class ArticleController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArticleController.class);
 
 
     private  static final String IMAGE_URL_PRE ="http://access-usf.jd.com:8089/file/viewImage?key=";
@@ -34,6 +31,11 @@ public class FileUploadController {
 
     @Autowired
     private ArticleService articleService;
+
+    @RequestMapping("/display")
+    public String uploadImage(){
+        return "display";
+    }
 
     @ResponseBody
     @RequestMapping("/uploadImage")
@@ -98,4 +100,8 @@ public class FileUploadController {
 
         }
     }
+
+
+
+
 }
