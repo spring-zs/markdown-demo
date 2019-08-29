@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="edge">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>查看文章</title>
+
+    <link rel="stylesheet" href="/plugins/editormd/css/editormd.css" />
+
+</head>
+
+<body>
+
+<div id="test-editormd-view">
+                <textarea id="append-test" style="display:none;">
+### 绘制表格 Tables
+
+| 项目        | 价格   |  数量  |
+| --------   | -----:  | :----:  |
+| 计算机      | $1600   |   5     |
+| 手机        |   $12   |   12   |
+| 管线        |    $1    |  234  |
+
+ ### 绘制流程图 Flowchart
+
+```flow
+st=>start: 用户登陆
+op=>operation: 登陆操作
+cond=>condition: 登陆成功 Yes or No?
+e=>end: 进入后台
+
+st->op->cond
+cond(yes)->e
+cond(no)->op
+```
+
+ ### 科学公式 TeX(KaTeX)
+
+$$E=mc^2$$
+
+行内的公式$$E=mc^2$$行内的公式，行内的$$E=mc^2$$公式。
+
+$$\(\sqrt{3x-1}+(1+x)^2\)$$
+
+$$\sin(\alpha)^{\theta}=\sum_{i=0}^{n}(x^i + \cos(f))$$
+
+$$X^2 > Y$$
+
+##### 上标和下标
+
+上标：X&lt;sup&gt;2&lt;/sup&gt;
+
+下标：O&lt;sub&gt;2&lt;/sub&gt;
+
+##### 代码块里包含的过滤标签及属性不会被过滤
+
+```html
+&lt;style type="text/style"&gt;
+body{background:red;}
+&lt;/style&gt;
+
+&lt;script type="text/javscript"&gt;
+alert("script");
+&lt;/script&gt;
+
+&lt;iframe height=498 width=510 src="http://player.youku.com/embed/XMzA0MzIwMDgw" frameborder=0 allowfullscreen&gt;&lt;/iframe&gt;
+```
+
+##### Style
+
+&lt;style&gt;
+body{background:red;}
+&lt;/style&gt;
+
+&lt;style type="text/style"&gt;
+body{background:red;}
+&lt;/style&gt;
+
+##### Script
+
+&lt;script&gt;
+alert("script");
+&lt;/script&gt;
+
+&lt;script type="text/javscript"&gt;
+alert("script");
+&lt;/script&gt;
+</textarea>
+
+    <textarea id="append-test2" style="display:block;">
+        ### 绘制表格 Tables
+
+| 项目        | 价格   |  数量  |
+| --------   | -----:  | :----:  |
+| 计算机      | $1600   |   5     |
+| 手机        |   $12   |   12   |
+| 管线        |    $1    |  234  |
+    </textarea>
+</div>
+dddddddddddd444444444444
+</body>
+
+
+
+<script src="/js/jquery.min.js"></script>
+<script src="/plugins/editormd/lib/marked.min.js"></script>
+<script src="/plugins/editormd/lib/prettify.min.js"></script>
+
+<script src="/plugins/editormd/lib/raphael.min.js"></script>
+<script src="/plugins/editormd/lib/underscore.min.js"></script>
+<script src="/plugins/editormd/lib/sequence-diagram.min.js"></script>
+<script src="/plugins/editormd/lib/flowchart.min.js"></script>
+<script src="/plugins/editormd/lib/jquery.flowchart.min.js"></script>
+<script src="/plugins/editormd/js/editormd.js"></script>
+
+<script type="text/javascript">
+    $(function() {
+        var  testEditormdView;
+
+       /* //markdown 没有配置的话（默认为""),会默认解析test-editormd-view节点下的 第一个  textarea内容进行显示，
+        // 解析后会默认会删除这个节点下的 所有的 textarea 节点
+        //如果markdownSourceCode设置为true（默认值为false），那么不会删除这些textarea节点*/
+        testEditormdView = editormd.markdownToHTML("test-editormd-view", {
+            htmlDecode      : "style,script,iframe",  // you can filter tags decode
+            tocm            : true,
+            taskList        : true,
+            tex             : true,  // 默认不解析
+            flowChart       : true,  // 默认不解析
+            sequenceDiagram : true,  // 默认不解析
+            markdownSourceCode:false,
+
+
+
+        });
+    });
+</script>
+
+
+</script>
+
+</html>

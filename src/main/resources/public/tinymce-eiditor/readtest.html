@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>test read</title>
+</head>
+<body>
+<div id="div"> </div>
+
+<script src="/js/jquery.min.js"></script>
+<script src="/js/popper.min.js"></script>
+<script src="/plugins/tinymce5/tinymce.js" ></script>
+<script>
+    (function() {
+        $.post("/tinymce-eiditor/read",function(data,status){
+            $("#div").html(data.html);
+        });
+    })();
+
+
+</script>
+
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/plugins/tinymce5/tinymce.js" ></script>
+
+
+<script type="text/javascript">
+    var tmp = tinymce.init({
+        selector: '#mytextarea',
+        // inline: true,
+        toolbar_drawer: 'sliding',
+        browser_spellcheck: true, // 拼写检查
+        branding: false, // 去水印
+        elementpath: false,  //禁用编辑器底部的状态栏
+        statusbar: false, // 隐藏编辑器底部的状态栏
+
+        menubar: false, // 隐藏最上方menu
+        language_url: '/plugins/tinymce5/langs/zh_CN.js/',
+        language: 'zh_CN',
+        // //去除显示的提示对话框通知“This domain is not registered with TinyMCE Cloud. Start a free trial to discover our premium cloud services and pro support.”
+        // init_instance_callback : function(editor) {
+        //     var freeTiny = document.querySelector('.tox-notifications-container');
+        //     freeTiny.style.display = 'none';
+        // },
+        plugins: 'print preview fullpage  importcss  searchreplace autolink autosave save directionality  visualblocks visualchars fullscreen image link media  template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists  wordcount   imagetools textpattern noneditable help   charmap  quickbars emoticons',
+        imagetools_cors_hosts: ['picsum.photos'],
+        tinydrive_token_provider: function (success, failure) {
+            success({ token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huZG9lIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.Ks_BdfH4CWilyzLNk8S2gDARFhuxIauLa8PwhdEQhEo' });
+        },
+        tinydrive_demo_files_url: '/docs/demo/tiny-drive-demo/demo_files.json',
+        tinydrive_dropbox_app_key: 'jee1s9eykoh752j',
+        tinydrive_google_drive_key: 'AIzaSyAsVRuCBc-BLQ1xNKtnLHB3AeoK-xmOrTc',
+        tinydrive_google_drive_client_id: '748627179519-p9vv3va1mppc66fikai92b3ru73mpukf.apps.googleusercontent.com',
+
+        toolbar: 'undo redo table | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media pageembed  link anchor codesample | a11ycheck ltr rtl',
+        autosave_ask_before_unload: true,
+        autosave_interval: "30s",
+        autosave_prefix: "{path}{query}-{id}-",
+        autosave_restore_when_empty: false,
+        autosave_retention: "2m",
+        image_advtab: true,
+
+
+        importcss_append: true,
+        height: 400,
+
+
+        template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+        template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+
+        image_caption: true,
+        quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+        noneditable_noneditable_class: "mceNonEditable",
+
+        spellchecker_dialog: true,
+        spellchecker_whitelist: ['Ephox', 'Moxiecode'],
+        tinycomments_mode: 'embedded',
+        content_style: ".mymention{ color: green; }",
+        contextmenu: "link image imagetools table configurepermanentpen",
+
+        content_style: '.mce-annotation { background: #fff0b7; } .tc-active-annotation {background: #ffe168; color: black; }',
+        font_formats : "宋体=宋体;微软雅黑=微软雅黑;新宋体=新宋体;Times New Roman=times new roman,times;Arial=arial,helvetica,sans-serif; Courier New=courier new,courier,monospace; AkrutiKndPadmini=Akpdmi-n",
+        // fontsize_formats : "初号=42pt; 小初=36pt",
+        // block_formats:'段落=p; 标题1=h1; 标题2=h2; 标题3=h3; 标题4=h4; 标题5=h5; 标题6=h6; 预先格式化的=pre',
+        /* without images_upload_url set, Upload tab won't show up*/
+        images_upload_url: 'file_upload',
+        images_upload_base_path: 'http://localhost:8080',//图片上传成功后，加在返回的url其前面
+        images_upload_credentials: true,
+
+
+
+    });
+function submitForm() {
+    document.getElementById("form").submit();
+}
+
+
+</script>
+</head>
+
+<body>
+<h1>TinyMCE Inline Editing Mode Guide</h1>
+<form id="form" method="post" action="/tinymce-eiditor/content">
+
+    <textarea id="mytextarea" name="mytextarea"></textarea>
+    <input type="text" value="提交"  onclick="submitForm();"/>
+</form>
+</body>
+</html>
